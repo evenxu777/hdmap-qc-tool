@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "基础样例",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/map_qc.py",
+      "args": ["--input", "data/sample_map.xodr", "--out", "out"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "站点规则",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/map_qc.py",
+      "args": ["--input", "data/sample_map.xodr", "--out", "out_site", "--site", "data/site"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

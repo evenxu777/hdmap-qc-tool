@@ -11,7 +11,7 @@ python map_qc.py --input data/sample_map.xodr --out out
 产物：`out/qc_report.csv` + `out/qc_report.html`（浏览器打开演示）。
 内置示例故意埋了 3 处问题（road 2 几何断裂、后继引用不存在的 road 99、junction 引用不存在的 incomingRoad 999），用于演示质检命中。
 
-## 矿区站点扩展（卡特彼勒岗位口径，R7/R8）
+## 矿区站点扩展（R7/R8）
 
 ```bash
 # 基础 5 条规则 + 站点 2 条规则（围栏闭合/自相交、POI 必填/类型/唯一）
@@ -27,10 +27,10 @@ python site_map_preview.py --site data/site --out out_site
 ## 换成真实数据
 
 1. 下载公开 xodr：esmini 仓库 `resources/xodr/` 下有多个样例（https://github.com/esmini/esmini ）。
-2. `python map_qc.py --input <你的文件.xodr> --out out`。
+2. `python map_qc.py --input <输入文件.xodr> --out out`。
 3. 规则阈值在 `map_qc.py` 顶部常量区调整（容差、限速上限）。
 
-## Docker（可选，Day 4 做）
+## Docker（可选）
 
 ```bash
 docker build -t map-qc .
@@ -44,7 +44,7 @@ docker run --rm -v %cd%/data:/app/data -v %cd%/out:/app/out map-qc --input data/
 - [ ] 增加 junction laneLink from/to 合法性检查
 - [ ] 用 matplotlib 出 1 张"规则命中分布"柱状图嵌进 HTML
 - [ ] （进阶）用 pyodrx 替换手写解析，对比解析结果一致性
-- [ ] 输出《OpenDRIVE vs NDS 数据模型对比》一页笔记（对应面试讲解）
+- [ ] 输出《OpenDRIVE vs NDS 数据模型对比》一页笔记
 - [ ] R9：POI 是否落在任一围栏内（`site_rules.point_in_ring` 已实现，只差调用）
 - [ ] R10：道路连通性与单向环路（road→successor 邻接表，无出口的单向闭环报错）
 - [ ] R11：坡度 / 限高字段范围校验（slope_pct ∈ [-15,15]，height_limit_m ≥ 0）

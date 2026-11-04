@@ -32,45 +32,64 @@ SPEED_MAX_KMH = 130.0      # R3 限速上限（城市场景经验值，可按需
 
 
 def parse_xodr(path):
-    """解析 xodr，返回 dict: roads, junctions。每一步都带注释，方便替换为 pyodrx 等成熟库。"""
-    tree = ET.parse(path)
-    root = tree.getroot()
+    root = ET.parse(path).getroot()
     roads = {}
-    for r in root.iter("road"):
+    for r in root.findall("road"):
         road_id = r.get("id")
         road = {
             "id": road_id,
             "name": r.get("name", ""),
             "length": float(r.get("length", "0")),
             "junction": r.get("junction", "-1"),
-            "link_refs": [],      # [(dir, elementType, elementId)]
-            "speeds_kmh": [],     # road type 上的 speed
-            "geom_len_sum": 0.0,  # planView 几何长度累计
-            "lane_ids": [],       # 全部 lane id（用于 R1）
+            "link_refs": [],
+            "speeds_kmh": [],
+            "geom_len_sum": 0.0,
+            "lane_ids": [],
+            "lane_sections": [],   # [{'s': float, 'lanes': [{'id': int, 'type': str, 'side': str}]}]
         }
+
         link = r.find("link")
         if link is not None:
             for tag in ("predecessor", "successor"):
                 for e in link.findall(tag):
                     road["link_refs"].append((tag, e.get("elementType"), e.get("elementId")))
+
         for t in r.findall("type"):
             sp = t.find("speed")
             if sp is not None and sp.get("max") not in (None, ""):
                 unit = sp.get("unit", "km/h")
                 v = float(sp.get("max"))
-                road["speeds_kmh"].append(v if "km" in unit else v * 3.6)  # m/s -> km/h
+                road["speeds_kmh"].append(v if "km" in unit else v * 3.6)
+
         pv = r.find("planView")
         if pv is not None:
             for g in pv.findall("geometry"):
                 road["geom_len_sum"] += float(g.get("length", "0"))
-        lanes = r.find("lanes")
-        if lanes is not None:
-            for ls in lanes.iter("lane"):
-                road["lane_ids"].append(ls.get("id"))
+
+        lanes_el = r.find("lanes")
+        if lanes_el is not None:
+            for sec in lanes_el.findall("laneSection"):
+                section_lanes = []
+                for side in ("left", "center", "right"):
+                    holder = sec.find(side)
+                    if holder is None:
+                        continue
+                    for ln in holder.findall("lane"):
+                        section_lanes.append({
+                            "id": int(ln.get("id")),
+                            "type": ln.get("type", "none"),
+                            "side": side,
+                        })
+                road["lane_sections"].append({
+                    "s": float(sec.get("s", "0")),
+                    "lanes": section_lanes,
+                })
+                road["lane_ids"].extend(l["id"] for l in section_lanes)
+
         roads[road_id] = road
 
     junctions = {}
-    for j in root.iter("junction"):
+    for j in root.findall("junction"):
         jid = j.get("id")
         junctions[jid] = {
             "id": jid,
@@ -78,7 +97,6 @@ def parse_xodr(path):
             "connecting_roads": [c.get("connectingRoad") for c in j.findall("connection")],
         }
     return roads, junctions
-
 
 def check_rules(roads, junctions):
     """执行 5 条规则，返回问题列表 [{rule, level, object, message}]"""
@@ -124,6 +142,25 @@ def check_rules(roads, junctions):
             if ir not in roads:
                 issues.append({"rule": "R5", "level": "ERROR", "object": f"junction {jid}",
                                "message": f"incomingRoad id={ir} 不存在"})
+
+    # R6 车道数一致性：每个 laneSection 内 left 应为 1..N，right 应为 -1..-N
+    for rid, road in roads.items():
+        for ls_idx, sec in enumerate(road.get("lane_sections", [])):
+            lanes = sec["lanes"]
+            left_ids  = sorted(l["id"] for l in lanes if l["side"] == "left")
+            right_ids = sorted((l["id"] for l in lanes if l["side"] == "right"), reverse=True)
+            if not left_ids and not right_ids:
+                issues.append({"rule": "R6", "level": "WARN", "object": f"road {rid} laneSection[{ls_idx}]",
+                            "message": "该 laneSection 无 left/right 车道"})
+                continue
+            expected_left  = list(range(1, len(left_ids) + 1))
+            expected_right = [-i for i in range(1, len(right_ids) + 1)]
+            if left_ids != expected_left:
+                issues.append({"rule": "R6", "level": "WARN", "object": f"road {rid} laneSection[{ls_idx}]",
+                            "message": f"left 车道 id 不连续：{left_ids}，期望 {expected_left}"})
+            if right_ids != expected_right:
+                issues.append({"rule": "R6", "level": "WARN", "object": f"road {rid} laneSection[{ls_idx}]",
+                            "message": f"right 车道 id 不连续：{right_ids}，期望 {expected_right}"})
 
     return issues
 
