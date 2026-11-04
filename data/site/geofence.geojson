@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"fence_id": "F1", "name": "采区围栏", "usable": true},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[120.6000, 31.3000], [120.6060, 31.3000], [120.6060, 31.3040], [120.6000, 31.3040], [120.6000, 31.3000]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"fence_id": "F2", "name": "排土场围栏", "usable": true},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[120.6070, 31.3000], [120.6120, 31.3000], [120.6120, 31.3040], [120.6070, 31.3040]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"fence_id": "F3", "name": "加油区围栏（自相交）", "usable": true},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[120.6000, 31.3050], [120.6040, 31.3090], [120.6040, 31.3050], [120.6000, 31.3090], [120.6000, 31.3050]]]
+      }
+    }
+  ]
+}

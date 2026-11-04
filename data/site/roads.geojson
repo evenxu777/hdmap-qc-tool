@@ -1,0 +1,20 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"road_id": "S1", "name": "主运输道路", "slope_pct": 3.5, "height_limit_m": 0, "oneway": true},
+      "geometry": {"type": "LineString", "coordinates": [[120.6000, 31.3022], [120.6090, 31.3022]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"road_id": "S2", "name": "装载区支路", "slope_pct": 8.2, "height_limit_m": 4.5, "oneway": true},
+      "geometry": {"type": "LineString", "coordinates": [[120.6020, 31.3022], [120.6020, 31.3038]]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"road_id": "S3", "name": "排土场通道", "slope_pct": 11.4, "height_limit_m": 0, "oneway": false},
+      "geometry": {"type": "LineString", "coordinates": [[120.6090, 31.3022], [120.6100, 31.3034]]}
+    }
+  ]
+}

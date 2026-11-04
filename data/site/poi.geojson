@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"poi_id": "P1", "type": "load", "name": "装载点-A", "capacity_t": 90},
+      "geometry": {"type": "Point", "coordinates": [120.6020, 31.3020]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"poi_id": "P2", "type": "unload", "name": "卸载点-B", "capacity_t": 120},
+      "geometry": {"type": "Point", "coordinates": [120.6090, 31.3020]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"poi_id": "P3", "type": "fuel", "name": "", "capacity_t": 0},
+      "geometry": {"type": "Point", "coordinates": [120.6020, 31.3070]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"poi_id": "P1", "type": "load", "name": "装载点-A（重复）"},
+      "geometry": {"type": "Point", "coordinates": [120.6030, 31.3020]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"poi_id": "P4", "type": "weigh", "name": "地磅-1"},
+      "geometry": {"type": "Point", "coordinates": [120.6080, 31.3010]}
+    }
+  ]
+}

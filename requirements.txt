@@ -1,0 +1,5 @@
+# Minimal version uses only the Python standard library (Python >= 3.9)
+# Optional packages below; install only when needed:
+# pyodrx==0.4.0        # mature OpenDRIVE parser (replaces hand-written parsing)
+# matplotlib==3.8.4    # statistics charts in the report
+# lxml==5.2.2          # faster XML parsing
