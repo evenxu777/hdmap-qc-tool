@@ -1,8 +1,6 @@
 __pycache__/
-out/
-out_site/
-out_straight/
-out_e6mini/
-out_sample/
+out*/
 *.pyc
 .venv/
+*.db
+*.tmp

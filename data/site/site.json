@@ -1,0 +1,5 @@
+{
+  "name": "demo_site",
+  "base_map": "sample_map.xodr",
+  "description": "演示站点：围栏与 POI 样例，仅绑定 sample_map.xodr 使用"
+}

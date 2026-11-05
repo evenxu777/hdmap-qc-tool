@@ -3,12 +3,14 @@
 site_rules.py — 站点/矿区地图语境规则（项目②的项目③改造扩展）
 
 在城市 OpenDRIVE 质检之外，增加矿区站点静态地图的两类检查：
-    R7 电子围栏闭合性与自相交：环首尾必须闭合；非相邻边不得相交
+    R7 电子围栏闭合性与自相交：环点数需 >= 4；首尾必须闭合；非相邻边不得相交
     R8 站点 POI 要素完整性：必填字段、类型合法、id 唯一
 
 只依赖标准库。输入为 GeoJSON：
     geofence.geojson  Polygon，properties: fence_id, name
-    poi.geojson       Point，  properties: poi_id, type(load/unload/fuel), name
+    poi.geojson       Point，  properties: poi_id, type(load/unload/fuel/parking/dump), name
+    site.json         声明绑定基准地图：name / base_map / description；
+                      缺失或 base_map 与输入地图不匹配时跳过 R7/R8 并告警
 
 用法（由 map_qc.py 调用）：
     python map_qc.py --input data/sample_map.xodr --out out --site data/site
@@ -31,6 +33,40 @@ def load_site(site_dir):
             return json.load(f).get("features", [])
 
     return _load("geofence.geojson"), _load("poi.geojson")
+
+
+def load_site_manifest(site_dir):
+    """读取 site.json，返回 {name, base_map, description}；缺失或字段无效时返回 None。
+
+    base_map 支持字符串或字符串数组，只取文件名（basename），便于跨机器。
+    """
+    path = os.path.join(site_dir, "site.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(data, dict):
+        return None
+
+    raw = data.get("base_map")
+    if isinstance(raw, str):
+        names = [raw]
+    elif isinstance(raw, list):
+        names = [x for x in raw if isinstance(x, str)]
+    else:
+        names = []
+    names = [os.path.basename(x.strip()) for x in names if x.strip()]
+    if not names:
+        return None
+
+    return {
+        "name": data.get("name", ""),
+        "base_map": names,
+        "description": data.get("description", ""),
+    }
 
 
 # ---------------- 几何基础函数（纯 Python，避免引入 shapely） ----------------

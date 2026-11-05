@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-site_map_preview.py — 矿区站点静态地图样例渲染（第四个个人项目的最小产出）
+site_map_preview.py — 矿区站点静态地图样例渲染（项目② 的站点数据可视化）
 
 读取 data/site 下的 roads/poi/geofence GeoJSON，渲染一张静态 PNG：
     道路（按单向/双向区分线型）+ 坡度标注 + 装载/卸载/加油 POI + 电子围栏
